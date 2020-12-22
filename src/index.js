@@ -84,3 +84,13 @@ class FetchAdapter {
 
   }
 }
+
+//LISTENERS
+ 
+document.addEventListener('DOMContentLoaded', function(e) {
+  //Create page infrastructure. Render landing page.
+})
+
+document.addEventListener('click', function(e) {
+  console.dir(e.target)
+})
