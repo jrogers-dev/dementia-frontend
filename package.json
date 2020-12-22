@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/jrogers-dev/dementia-frontend#readme",
   "dependencies": {
+    "autoprefixer": "^10.1.0",
+    "postcss": "^8.2.1",
     "tailwindcss": "^2.0.2"
   }
 }
