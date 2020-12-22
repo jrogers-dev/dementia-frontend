@@ -29,7 +29,9 @@ class Dementia {
 
 class Game {
   constructor() {
-
+    FetchAdapter.postData("http://localhost:3000/games", {})
+      .then(result => { this.id = result.id });
+    this.state = 0;
   }
 
   static all() {
@@ -53,6 +55,7 @@ class Position {
 class Card {
 
 }
+
 
 class FetchAdapter {
   static fetchData(url) {
