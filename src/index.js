@@ -1,6 +1,10 @@
 //MODELS
 
 class Dementia {
+  static buildPage() {
+
+  }
+  
   static marqueeContainer() {
     //return this.mc ||= document.querySelector('#marquee');
   }
