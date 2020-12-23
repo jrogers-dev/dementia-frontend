@@ -21,12 +21,14 @@ class Dementia {
 
   static displayLanding() {
     let spanBanner = document.createElement("span");
+    spanBanner.id = "spanBanner";
     spanBanner.textContent = "DEMENTIA!!!";
     spanBanner.classList.add("flex", "justify-center", "text-4xl");
     console.log(spanBanner);
     Dementia.marqueeContainer().appendChild(spanBanner);
 
     let btnNewGame = document.createElement("button");
+    btnNewGame.id = "btnNewGame";
     btnNewGame.textContent = "New Game";
     btnNewGame.classList.add("flex", "bg-blue-500", "rounded", "px-2");
     console.log(btnNewGame);
@@ -34,7 +36,19 @@ class Dementia {
   }
 
   static displaySetup() {
+    let setupBanner = document.createElement("span");
+    setupBanner.id = "setupBanner";
+    setupBanner.textContent = "Game Setup";
+    setupBanner.classList.add("flex", "justify-center", "text-4xl");
+    console.log(setupBanner);
+    Dementia.marqueeContainer().appendChild(setupBanner);
 
+    let btnStartGame = document.createElement("button");
+    btnStartGame.id = "btnNewGame";
+    btnStartGame.textContent = "New Game";
+    btnStartGame.classList.add("flex", "bg-green-500", "rounded", "px-2");
+    console.log(btnStartGame);
+    Dementia.fieldContainer().appendChild(btnStartGame);
   }
 
   static displayGame() {
@@ -109,4 +123,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
 
 document.addEventListener('click', function(e) {
   console.dir(e.target)
+  if (e.target.id == "btnNewGame") {
+    Dementia.displaySetup();
+  }
 })
