@@ -29,13 +29,17 @@ class Dementia {
 
     let btnNewGame = document.createElement("button");
     btnNewGame.id = "btnNewGame";
-    btnNewGame.textContent = "New Game";
+    btnNewGame.textContent = "Start Game";
     btnNewGame.classList.add("flex", "bg-blue-500", "rounded", "px-2");
     console.log(btnNewGame);
     Dementia.fieldContainer().appendChild(btnNewGame);
   }
 
   static displaySetup() {
+    removeAllChildNodes(Dementia.marqueeContainer());
+    removeAllChildNodes(Dementia.fieldContainer());
+    removeAllChildNodes(Dementia.bottomContainer());
+
     let setupBanner = document.createElement("span");
     setupBanner.id = "setupBanner";
     setupBanner.textContent = "Game Setup";
@@ -44,8 +48,8 @@ class Dementia {
     Dementia.marqueeContainer().appendChild(setupBanner);
 
     let btnStartGame = document.createElement("button");
-    btnStartGame.id = "btnNewGame";
-    btnStartGame.textContent = "New Game";
+    btnStartGame.id = "btnStartGame";
+    btnStartGame.textContent = "Let's Go!";
     btnStartGame.classList.add("flex", "bg-green-500", "rounded", "px-2");
     console.log(btnStartGame);
     Dementia.fieldContainer().appendChild(btnStartGame);
@@ -127,3 +131,11 @@ document.addEventListener('click', function(e) {
     Dementia.displaySetup();
   }
 })
+
+//HELPERS
+
+function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+      parent.removeChild(parent.firstChild);
+  }
+}
