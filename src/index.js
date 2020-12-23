@@ -1,24 +1,36 @@
 //MODELS
 
 class Dementia {
-  static buildPage() {
-
-  }
-  
   static marqueeContainer() {
-    //return this.mc ||= document.querySelector('#marquee');
+    this.mc ||= document.querySelector("#marquee");
+    console.log(this.mc);
+    return this.mc;
   }
 
   static fieldContainer() {
-    //return this.fc ||= document.querySelector('#field');
+    this.fc ||= document.querySelector('#field');
+    console.log(this.fc);
+    return this.fc;
   }
 
   static bottomContainer() {
-    //return this.bc ||= document.querySelector('#bottom');
+    this.bc ||= document.querySelector('#bottom');
+    console.log(this.bc);
+    return this.bc;
   }
 
   static displayLanding() {
+    let spanBanner = document.createElement("span");
+    spanBanner.textContent = "DEMENTIA!!!";
+    spanBanner.classList.add("flex", "justify-center", "text-4xl");
+    console.log(spanBanner);
+    Dementia.marqueeContainer().appendChild(spanBanner);
 
+    let btnNewGame = document.createElement("button");
+    btnNewGame.textContent = "New Game";
+    btnNewGame.classList.add("flex", "bg-blue-500", "rounded", "px-2");
+    console.log(btnNewGame);
+    Dementia.fieldContainer().appendChild(btnNewGame);
   }
 
   static displaySetup() {
@@ -92,7 +104,7 @@ class FetchAdapter {
 //LISTENERS
  
 document.addEventListener('DOMContentLoaded', function(e) {
-  //Create page infrastructure. Render landing page.
+  Dementia.displayLanding();
 })
 
 document.addEventListener('click', function(e) {
