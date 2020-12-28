@@ -23,16 +23,15 @@ class Dementia {
     let spanBanner = document.createElement("span");
     spanBanner.id = "spanBanner";
     spanBanner.textContent = "DEMENTIA!!!";
-    spanBanner.classList.add("flex", "justify-center", "text-4xl");
-    console.log(spanBanner);
+    spanBanner.classList.add("text-4xl");
     Dementia.marqueeContainer().appendChild(spanBanner);
 
     let btnNewGame = document.createElement("button");
     btnNewGame.id = "btnNewGame";
     btnNewGame.textContent = "Start Game";
-    btnNewGame.classList.add("flex", "bg-blue-500", "rounded", "px-2");
+    btnNewGame.classList.add("bg-blue-500", "rounded", "px-2");
     console.log(btnNewGame);
-    Dementia.fieldContainer().appendChild(btnNewGame);
+    Dementia.bottomContainer().appendChild(btnNewGame);
   }
 
   static displaySetup() {
@@ -43,20 +42,29 @@ class Dementia {
     let setupBanner = document.createElement("span");
     setupBanner.id = "setupBanner";
     setupBanner.textContent = "Game Setup";
-    setupBanner.classList.add("flex", "justify-center", "text-4xl");
+    setupBanner.classList.add("justify-center", "text-4xl");
     console.log(setupBanner);
     Dementia.marqueeContainer().appendChild(setupBanner);
 
     let btnStartGame = document.createElement("button");
     btnStartGame.id = "btnStartGame";
     btnStartGame.textContent = "Let's Go!";
-    btnStartGame.classList.add("flex", "bg-green-500", "rounded", "px-2");
+    btnStartGame.classList.add("bg-green-500", "rounded", "px-2");
     console.log(btnStartGame);
-    Dementia.fieldContainer().appendChild(btnStartGame);
+    Dementia.bottomContainer().appendChild(btnStartGame);
   }
 
   static displayGame() {
+    removeAllChildNodes(Dementia.marqueeContainer());
+    removeAllChildNodes(Dementia.fieldContainer());
+    removeAllChildNodes(Dementia.bottomContainer());
 
+    let gameBanner = document.createElement("span");
+    gameBanner.id = "gameBanner";
+    gameBanner.textContent = "Remember Not to Forget!";
+    gameBanner.classList.add("flex", "justify-center", "text-4xl");
+    console.log(gameBanner);
+    Dementia.marqueeContainer().appendChild(gameBanner);
   }
 }
 
@@ -127,8 +135,12 @@ document.addEventListener('DOMContentLoaded', function(e) {
 
 document.addEventListener('click', function(e) {
   console.dir(e.target)
+
   if (e.target.id == "btnNewGame") {
     Dementia.displaySetup();
+  }
+  else if (e.target.id == "btnStartGame") {
+    Dementia.displayGame();
   }
 })
 
