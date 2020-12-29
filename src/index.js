@@ -21,6 +21,7 @@ class Dementia {
 
   static newGame() {
     this.game = new Game();
+    console.log(this.game);
     this.displaySetup();
   }
 
@@ -39,7 +40,7 @@ class Dementia {
 
     let btnNewGame = document.createElement("button");
     btnNewGame.id = "btnNewGame";
-    btnNewGame.textContent = "Start Game";
+    btnNewGame.textContent = "New Game";
     btnNewGame.classList.add("bg-blue-500", "rounded", "px-2");
     Dementia.bottomContainer().appendChild(btnNewGame);
   }
@@ -78,18 +79,25 @@ class Dementia {
 
 class Game {
   constructor() {
-    FetchAdapter.postData("http://localhost:3000/games", {state: 0})
-      .then(result => {
-         this.id = result.data.id;
-         this.state = result.data.attributes.state;
-      })
-      .catch(err => console.log(err))
-    ;
+    this.id = null;
+    this.state = 0;
+    this.persisted = false;
   }
 
-  static all() {
-    FetchAdapter.fetchData("http://localhost:3000/games")
-      .then(result => console.log(result.data));
+  persist() {
+    if (this.persisted == false) {
+      FetchAdapter.postData("http://localhost:3000/games", {state: 0})
+        .then(result => {
+          this.id = result.data.id;
+          this.state = result.data.attributes.state;
+          this.persisted = true;
+        })
+        .catch(err => console.log(err))
+      ;
+    }
+    else {
+      console.log("Game object already exists in database");
+    }
   }
 
   destroy() {
@@ -97,6 +105,25 @@ class Game {
       .then(result => console.log(result));
     this.id = null;
     this.state = null;
+    this.persisted = false;
+  }
+
+  static find(game_id) {
+    let tempGame =  new Game(); 
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}`)
+      .then(result => {
+        tempGame.id = result.data.id;
+        tempGame.state = result.data.state;
+        tempGame.persisted = true;
+      })
+      .catch(err => console.log(err));
+    ;
+    return tempGame;
+  }
+
+  static all() {
+    FetchAdapter.fetchData("http://localhost:3000/games")
+      .then(result => console.log(result.data));
   }
 }
 
@@ -160,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
 })
 
 document.addEventListener('click', function(e) {
-  console.dir(e.target)
+  console.dir(`Clicked: ${e.target.id}`);
 
   if (e.target.id == "btnNewGame") {
     Dementia.newGame();
