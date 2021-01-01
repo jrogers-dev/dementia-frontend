@@ -1,5 +1,4 @@
-//MODELS
-
+//-----------------------------------MODELS-------------------------------------------
 class Dementia {
   static marqueeContainer() {
     this.mc ||= document.querySelector("#marquee");
@@ -76,7 +75,6 @@ class Dementia {
   }
 }
 
-
 class Game {
   constructor() {
     this.id = null;
@@ -128,6 +126,59 @@ class Game {
 }
 
 class Player {
+  constructor(name, game_id) {
+    this.id = null;
+    this.name = name;
+    this.game_id = game_id;
+    this.persisted = false;
+  }
+
+  persist() {
+    if (this.persisted == false) {
+      FetchAdapter.postData(`http://localhost:3000/games/${this.game_id}/players`, {
+        player: {
+          name: this.name,
+          game_id: this.game_id
+        }
+      })
+        .then(result => {
+          this.id = result.data.id;
+          this.persisted = true;
+        })
+        .catch(err => console.log(err))
+      ;
+    }
+    else {
+      console.log("Player object already exists in database");
+    }
+  }
+
+  destroy() {
+    FetchAdapter.destroyData(`http://localhost:3000/games/${this.id}`)
+      .then(result => console.log(result));
+    this.id = null;
+    this.state = null;
+    this.persisted = false;
+  }
+
+  static find(id, game_id) {
+    let tempPlayer =  new Player(); 
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
+      .then(result => {
+        tempPlayer.id = result.data.id;
+        tempPlayer.game_id = result.data.game_id;
+        tempPlayer.name = result.data.name;
+        tempPlayer.persisted = true;
+      })
+      .catch(err => console.log(err));
+    ;
+    return tempPlayer;
+  }
+
+  static all(game_id) {
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players`)
+      .then(result => console.log(result.data));
+  }
 }
 
 class Board {
@@ -180,11 +231,12 @@ class FetchAdapter {
   }
 }
 
-//LISTENERS
- 
+
+
+//-----------------------------------LISTENERS------------------------------------------- 
 document.addEventListener('DOMContentLoaded', function(e) {
   Dementia.displayLanding();
-})
+});
 
 document.addEventListener('click', function(e) {
   console.dir(`Clicked: ${e.target.id}`);
@@ -195,10 +247,11 @@ document.addEventListener('click', function(e) {
   else if (e.target.id == "btnStartGame") {
     Dementia.displayGame();
   }
-})
+});
 
-//HELPERS
 
+
+//-----------------------------------HELPERS---------------------------------------------
 function removeAllChildNodes(parent) {
   while (parent.firstChild) {
       parent.removeChild(parent.firstChild);
