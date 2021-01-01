@@ -76,6 +76,8 @@ class Dementia {
 }
 
 class Game {
+  players = [];
+
   constructor() {
     this.id = null;
     this.state = 0;
@@ -106,6 +108,10 @@ class Game {
     this.persisted = false;
   }
 
+  addPlayer(name) {
+
+  }
+
   static find(game_id) {
     let tempGame =  new Game(); 
     FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}`)
@@ -126,6 +132,8 @@ class Game {
 }
 
 class Player {
+  boards = [];
+
   constructor(name, game_id) {
     this.id = null;
     this.name = name;
@@ -162,6 +170,10 @@ class Player {
     this.persisted = false;
   }
 
+  addBoard() {
+
+  }
+
   static find(id, game_id) {
     let tempPlayer =  new Player("Bob", game_id); 
     FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
@@ -184,7 +196,67 @@ class Player {
 }
 
 class Board {
+  positions = [];
 
+  constructor(player_id) {
+    this.clear = false;
+    this.rotation = 0;
+    this.player_id = player_id;
+    this.persisted = false;
+  }
+
+  persist() {
+    if (this.persisted == false) {
+      FetchAdapter.postData(`http://localhost:3000/games/${this.game_id}/players`, {
+        player: {
+          name: this.name,
+          game_id: this.game_id
+        }
+      })
+        .then(result => {
+          this.id = result.data.id;
+          this.persisted = true;
+        })
+        .catch(err => console.log(err))
+      ;
+    }
+    else {
+      console.log("Player object already exists in database");
+    }
+  }
+
+  destroy() {
+    FetchAdapter.destroyData(`http://localhost:3000/games/${this.game_id}/players/${this.id}`)
+      .then(result => console.log(result));
+    this.id = null;
+    this.name = null;
+    this.game_id = null;
+    this.persisted = false;
+  }
+
+  addPosition() {
+
+  }
+  
+  static find(id, game_id) {
+    let tempPlayer =  new Player("Bob", game_id); 
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
+      .then(result => {
+        console.log(result);
+        tempPlayer.id = result.id;
+        tempPlayer.game_id = result.game_id;
+        tempPlayer.name = result.name;
+        tempPlayer.persisted = true;
+      })
+      .catch(err => console.log(err));
+    ;
+    return tempPlayer;
+  }
+
+  static all(game_id) {
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players`)
+      .then(result => console.log(result.data));
+  }
 }
 
 class Position {
