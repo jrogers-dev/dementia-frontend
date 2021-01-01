@@ -154,20 +154,22 @@ class Player {
   }
 
   destroy() {
-    FetchAdapter.destroyData(`http://localhost:3000/games/${this.id}`)
+    FetchAdapter.destroyData(`http://localhost:3000/games/${this.game_id}/players/${this.id}`)
       .then(result => console.log(result));
     this.id = null;
-    this.state = null;
+    this.name = null;
+    this.game_id = null;
     this.persisted = false;
   }
 
   static find(id, game_id) {
-    let tempPlayer =  new Player(); 
+    let tempPlayer =  new Player("Bob", game_id); 
     FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
       .then(result => {
-        tempPlayer.id = result.data.id;
-        tempPlayer.game_id = result.data.game_id;
-        tempPlayer.name = result.data.name;
+        console.log(result);
+        tempPlayer.id = result.id;
+        tempPlayer.game_id = result.game_id;
+        tempPlayer.name = result.name;
         tempPlayer.persisted = true;
       })
       .catch(err => console.log(err));
