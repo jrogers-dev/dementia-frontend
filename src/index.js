@@ -2,32 +2,40 @@
 class Dementia {
   static marqueeContainer() {
     this.mc ||= document.querySelector("#marquee");
-    //console.log(this.mc);
     return this.mc;
   }
 
   static fieldContainer() {
     this.fc ||= document.querySelector('#field');
-    //console.log(this.fc);
     return this.fc;
   }
 
   static bottomContainer() {
     this.bc ||= document.querySelector('#bottom');
-    //console.log(this.bc);
     return this.bc;
   }
 
   static newGame() {
     this.game = new Game();
-    console.log(this.game);
-    this.displaySetup();
+    this.game.persist();
+    return this.game;
   }
 
   static setupGame() {
+    let playerName = document.querySelector("#inputPlayerName").value;
+    console.log(playerName);
+    let playerObj = this.game.addPlayer(playerName);
+    let boardObj = playerObj.addBoard();
+    for (let i = 0; i < 20; i++) {
+      let positionObj = boardObj.addPosition();
+    }
 
+    this.playGame();
   }
 
+  static playGame() {
+    
+  }
 
 
   static displayLanding() {
@@ -54,6 +62,13 @@ class Dementia {
     setupBanner.textContent = "Game Setup";
     setupBanner.classList.add("justify-center", "text-4xl");
     Dementia.marqueeContainer().appendChild(setupBanner);
+
+    let inputPlayerName = document.createElement("input");
+    inputPlayerName.id = "inputPlayerName";
+    inputPlayerName.type = "text";
+    inputPlayerName.placeholder = "Player Name";
+    inputPlayerName.classList.add("text-4xl");
+    Dementia.fieldContainer().appendChild(inputPlayerName);
 
     let btnStartGame = document.createElement("button");
     btnStartGame.id = "btnStartGame";
@@ -140,7 +155,7 @@ class Player {
   constructor(name, game_id) {
     this.id = null;
     this.name = name;
-    this.game_id = game_id;
+    this.game = Game.find(game_id);
     this.persisted = false;
   }
 
@@ -149,7 +164,7 @@ class Player {
       FetchAdapter.postData(`http://localhost:3000/games/${this.game_id}/players`, {
         player: {
           name: this.name,
-          game_id: this.game_id
+          game_id: this.game.id
         }
       })
         .then(result => {
@@ -174,7 +189,10 @@ class Player {
   }
 
   addBoard() {
-
+    let newBoard = new Board(this.id, this.game.id);
+    newBoard.persist();
+    this.boards.push(newBoard);
+    return newBoard;
   }
 
   static find(id, game_id) {
@@ -204,13 +222,76 @@ class Board {
   constructor(player_id) {
     this.clear = false;
     this.rotation = 0;
-    this.player_id = player_id;
+    this.player = Player.find(player_id, game_id);
     this.persisted = false;
   }
 
   persist() {
     if (this.persisted == false) {
-      FetchAdapter.postData(`http://localhost:3000/games/${this.game_id}/players`, {
+      FetchAdapter.postData(`http://localhost:3000/games/${this.player.game.id}/players/${this.player.id}/boards`, {
+        board: {
+          player_id: this.player.id
+        }
+      })
+        .then(result => {
+          this.id = result.data.id;
+          this.persisted = true;
+        })
+        .catch(err => console.log(err))
+      ;
+    }
+    else {
+      console.log("Board object already exists in database");
+    }
+  }
+
+  destroy() {
+    FetchAdapter.destroyData(`http://localhost:3000/games/${this.game_id}/players/${this.id}`)
+      .then(result => console.log(result));
+    this.id = null;
+    this.name = null;
+    this.game_id = null;
+    this.persisted = false;
+  }
+
+  addPosition() {
+    let newPosition = new Position(this.id);
+    newPosition.persist();
+    this.positions.push(newPosition);
+    return newPosition;
+  }
+
+  static find(id, game_id) {
+    let tempPlayer =  new Player("Bob", game_id); 
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
+      .then(result => {
+        console.log(result);
+        tempPlayer.id = result.id;
+        tempPlayer.game_id = result.game_id;
+        tempPlayer.name = result.name;
+        tempPlayer.persisted = true;
+      })
+      .catch(err => console.log(err));
+    ;
+    return tempPlayer;
+  }
+
+  static all(game_id) {
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players`)
+      .then(result => console.log(result.data));
+  }
+}
+
+class Position {
+  constructor(board_id) {
+    this.card = null;
+    this.board = Board.find(board_id, )
+    this.persisted = false;
+  }
+
+  persist() {
+    if (this.persisted == false) {
+      FetchAdapter.postData(`http://localhost:3000/games/${Dementia.game.id}/players`, {
         player: {
           name: this.name,
           game_id: this.game_id
@@ -238,7 +319,10 @@ class Board {
   }
 
   addPosition() {
-
+    let newPosition = new Position(this.id);
+    newPosition.persist();
+    this.positions.push(newPosition);
+    return newPosition;
   }
 
   static find(id, game_id) {
@@ -260,10 +344,6 @@ class Board {
     FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players`)
       .then(result => console.log(result.data));
   }
-}
-
-class Position {
-
 }
 
 class Card {
@@ -320,8 +400,10 @@ document.addEventListener('click', function(e) {
 
   if (e.target.id == "btnNewGame") {
     Dementia.newGame();
+    Dementia.displaySetup();
   }
   else if (e.target.id == "btnStartGame") {
+    Dementia.setupGame();
     Dementia.displayGame();
   }
 });
