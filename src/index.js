@@ -112,6 +112,7 @@ class Game {
     let newPlayer = new Player(name, this.id);
     newPlayer.persist();
     this.players.push(newPlayer);
+    return newPlayer;
   }
 
   static find(game_id) {
@@ -119,7 +120,7 @@ class Game {
     FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}`)
       .then(result => {
         tempGame.id = result.data.id;
-        tempGame.state = result.data.state;
+        tempGame.state = result.data.attributes.state;
         tempGame.persisted = true;
       })
       .catch(err => console.log(err));
