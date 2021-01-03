@@ -24,19 +24,25 @@ class Dementia {
   static setupGame() {
     let playerName = document.querySelector("#inputPlayerName").value;
     console.log(playerName);
+
     let playerObj = this.game.addPlayer(playerName);
+    console.log(playerObj);
+
     let boardObj = playerObj.addBoard();
+    console.log(boardObj);
+
     for (let i = 0; i < 20; i++) {
       let positionObj = boardObj.addPosition();
-    }
+      console.log(positionObj);
 
-    this.playGame();
+      let cardObj = positionObj.addCard();
+      console.log(cardObj);
+    }
   }
 
   static playGame() {
     
   }
-
 
   static displayLanding() {
     let spanBanner = document.createElement("span");
@@ -196,13 +202,13 @@ class Player {
   }
 
   static find(id, game_id) {
-    let tempPlayer =  new Player("Bob", game_id); 
+    let tempPlayer =  new Player("???", game_id); 
     FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
       .then(result => {
         console.log(result);
-        tempPlayer.id = result.id;
-        tempPlayer.game_id = result.game_id;
-        tempPlayer.name = result.name;
+        tempPlayer.id = result.data.id;
+        tempPlayer.name = result.data.name;
+        tempPlayer.game = Game.find(game_id);
         tempPlayer.persisted = true;
       })
       .catch(err => console.log(err));
@@ -219,7 +225,7 @@ class Player {
 class Board {
   positions = [];
 
-  constructor(player_id) {
+  constructor(player_id, game_id) {
     this.clear = false;
     this.rotation = 0;
     this.player = Player.find(player_id, game_id);
@@ -246,7 +252,7 @@ class Board {
   }
 
   destroy() {
-    FetchAdapter.destroyData(`http://localhost:3000/games/${this.game_id}/players/${this.id}`)
+    FetchAdapter.destroyData(`http://localhost:3000/games/${this.player.game.id}/players/${this.player.id}/boards/${this.id}`)
       .then(result => console.log(result));
     this.id = null;
     this.name = null;
@@ -261,31 +267,30 @@ class Board {
     return newPosition;
   }
 
-  static find(id, game_id) {
-    let tempPlayer =  new Player("Bob", game_id); 
-    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
+  static find(id, player_id, game_id) {
+    let tempBoard =  new Board(player_id); 
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${player_id}/boards/${id}`)
       .then(result => {
         console.log(result);
-        tempPlayer.id = result.id;
-        tempPlayer.game_id = result.game_id;
-        tempPlayer.name = result.name;
-        tempPlayer.persisted = true;
+        tempBoard.id = result.data.id;
+        tempBoard.player = Player.find(player_id, game_id);
+        tempBoard.persisted = true;
       })
       .catch(err => console.log(err));
     ;
-    return tempPlayer;
+    return tempBoard;
   }
 
-  static all(game_id) {
-    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players`)
+  static all(player_id, game_id) {
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${player_id}/boards`)
       .then(result => console.log(result.data));
   }
 }
 
 class Position {
-  constructor(board_id) {
+  constructor(board_id, player_id, game_id) {
     this.card = null;
-    this.board = Board.find(board_id, )
+    this.board = Board.find(board_id, player_id, game_id);
     this.persisted = false;
   }
 
@@ -318,26 +323,25 @@ class Position {
     this.persisted = false;
   }
 
-  addPosition() {
-    let newPosition = new Position(this.id);
-    newPosition.persist();
-    this.positions.push(newPosition);
-    return newPosition;
+  addCard(value) {
+    let newCard = new Card(value, this.id, this.board.id, this.board.player.id, this.board.player.game.id);
+    newCard.persist();
+    this.card = newCard;
+    return newCard;
   }
 
-  static find(id, game_id) {
-    let tempPlayer =  new Player("Bob", game_id); 
-    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
+  static find(id, board_id, player_id, game_id) {
+    let tempPosition =  new Position(board_id, player_id, game_id); 
+    FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${player_id}/boards/${board_id}/positions/${id}`)
       .then(result => {
         console.log(result);
-        tempPlayer.id = result.id;
-        tempPlayer.game_id = result.game_id;
-        tempPlayer.name = result.name;
-        tempPlayer.persisted = true;
+        tempPosition.id = result.data.id;
+        tempPosition.board = Board.find(board_id, player_id, game_id);
+        tempPosition.persisted = true;
       })
       .catch(err => console.log(err));
     ;
-    return tempPlayer;
+    return tempPosition;
   }
 
   static all(game_id) {
@@ -347,7 +351,39 @@ class Position {
 }
 
 class Card {
+  constructor(value, position_id, board_id, player_id, game_id) {
+    this.value = value;
+    this.position = Position.find(position_id, board_id, player_id, game_id);
+    this.persisted = false;
+  }
 
+  persist() {
+    if (this.persisted == false) {
+      FetchAdapter.postData(`http://localhost:3000/games/${this.position.board.player.game.id}/players/${this.position.board.player.id}/boards/${this.position.board.id}/cards`, {
+        card: {
+          value: this.value,
+          position_id: this.position.id
+        }
+      })
+        .then(result => {
+          this.id = result.data.id;
+          this.persisted = true;
+        })
+        .catch(err => console.log(err))
+      ;
+    }
+    else {
+      console.log("Card object already exists in database");
+    }
+  }
+
+  destroy() {
+    FetchAdapter.destroyData(`http://localhost:3000/games/${this.game_id}/players/${this.id}`)
+      .then(result => console.log(result));
+    this.id = null;
+    this.position = null;
+    this.persisted = false;
+  }
 }
 
 
@@ -405,6 +441,7 @@ document.addEventListener('click', function(e) {
   else if (e.target.id == "btnStartGame") {
     Dementia.setupGame();
     Dementia.displayGame();
+    Dementia.playGame();
   }
 });
 
