@@ -109,7 +109,9 @@ class Game {
   }
 
   addPlayer(name) {
-
+    let newPlayer = new Player(name, this.id);
+    newPlayer.persist();
+    this.players.push(newPlayer);
   }
 
   static find(game_id) {
@@ -237,7 +239,7 @@ class Board {
   addPosition() {
 
   }
-  
+
   static find(id, game_id) {
     let tempPlayer =  new Player("Bob", game_id); 
     FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${id}`)
