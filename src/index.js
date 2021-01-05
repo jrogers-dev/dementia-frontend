@@ -49,7 +49,7 @@ class Dementia {
     let spanBanner = document.createElement("span");
     spanBanner.id = "spanBanner";
     spanBanner.textContent = "DEMENTIA!!!";
-    spanBanner.classList.add("text-4xl");
+    spanBanner.classList.add("text-4xl", "text-gray-300");
     Dementia.marqueeContainer().appendChild(spanBanner);
 
     let btnNewGame = document.createElement("button");
