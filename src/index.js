@@ -21,8 +21,10 @@ class Dementia {
   }
 
   static async setupGame() {
+    this.game.state = 1;
+
     let playerName = document.querySelector("#inputPlayerName").value;
-    
+
     let playerObj = this.game.addPlayer(playerName);
     await playerObj.persist();
 
@@ -35,7 +37,8 @@ class Dementia {
        let cardObj = positionObj.addCard(i);
        await cardObj.persist();
     }
-    console.log(this.game);
+
+    this.game.state = 2;
   }
 
   static playGame() {
@@ -428,7 +431,6 @@ class FetchAdapter {
     );
   }
 }
-
 
 
 //-----------------------------------LISTENERS------------------------------------------- 
