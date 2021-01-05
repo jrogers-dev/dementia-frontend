@@ -18,26 +18,24 @@ class Dementia {
   static newGame() {
     this.game = new Game();
     this.game.persist();
-    return this.game;
   }
 
-  static setupGame() {
+  static async setupGame() {
     let playerName = document.querySelector("#inputPlayerName").value;
-    console.log(playerName);
-
+    
     let playerObj = this.game.addPlayer(playerName);
-    console.log(playerObj);
+    await playerObj.persist();
 
     let boardObj = playerObj.addBoard();
-    console.log(boardObj);
+    await boardObj.persist();
 
     for (let i = 0; i < 20; i++) {
-      let positionObj = boardObj.addPosition();
-      console.log(positionObj);
-
-      let cardObj = positionObj.addCard();
-      console.log(cardObj);
+       let positionObj = boardObj.addPosition();
+       await positionObj.persist();
+       let cardObj = positionObj.addCard(i);
+       await cardObj.persist();
     }
+    console.log(this.game);
   }
 
   static playGame() {
@@ -107,11 +105,12 @@ class Game {
 
   persist() {
     if (this.persisted == false) {
-      FetchAdapter.postData("http://localhost:3000/games", {state: 0})
+      return FetchAdapter.postData("http://localhost:3000/games", {state: 0})
         .then(result => {
           this.id = result.data.id;
           this.state = result.data.attributes.state;
           this.persisted = true;
+          return result;
         })
         .catch(err => console.log(err))
       ;
@@ -130,8 +129,7 @@ class Game {
   }
 
   addPlayer(name) {
-    let newPlayer = new Player(name, this.id);
-    newPlayer.persist();
+    let newPlayer = new Player(name, this);
     this.players.push(newPlayer);
     return newPlayer;
   }
@@ -143,10 +141,10 @@ class Game {
         tempGame.id = result.data.id;
         tempGame.state = result.data.attributes.state;
         tempGame.persisted = true;
+        return tempGame;
       })
       .catch(err => console.log(err));
     ;
-    return tempGame;
   }
 
   static all() {
@@ -158,16 +156,16 @@ class Game {
 class Player {
   boards = [];
 
-  constructor(name, game_id) {
+  constructor(name, game) {
     this.id = null;
     this.name = name;
-    this.game = Game.find(game_id);
+    this.game = game;
     this.persisted = false;
   }
 
   persist() {
     if (this.persisted == false) {
-      FetchAdapter.postData(`http://localhost:3000/games/${this.game_id}/players`, {
+      return FetchAdapter.postData(`http://localhost:3000/games/${this.game.id}/players`, {
         player: {
           name: this.name,
           game_id: this.game.id
@@ -176,6 +174,7 @@ class Player {
         .then(result => {
           this.id = result.data.id;
           this.persisted = true;
+          return result;
         })
         .catch(err => console.log(err))
       ;
@@ -195,8 +194,7 @@ class Player {
   }
 
   addBoard() {
-    let newBoard = new Board(this.id, this.game.id);
-    newBoard.persist();
+    let newBoard = new Board(this);
     this.boards.push(newBoard);
     return newBoard;
   }
@@ -225,23 +223,26 @@ class Player {
 class Board {
   positions = [];
 
-  constructor(player_id, game_id) {
+  constructor(player) {
     this.clear = false;
     this.rotation = 0;
-    this.player = Player.find(player_id, game_id);
+    this.player = player;
     this.persisted = false;
   }
 
   persist() {
     if (this.persisted == false) {
-      FetchAdapter.postData(`http://localhost:3000/games/${this.player.game.id}/players/${this.player.id}/boards`, {
+      return FetchAdapter.postData(`http://localhost:3000/games/${this.player.game.id}/players/${this.player.id}/boards`, {
         board: {
+          clear: this.clear,
+          rotation: this.rotation,
           player_id: this.player.id
         }
       })
         .then(result => {
           this.id = result.data.id;
           this.persisted = true;
+          return result;
         })
         .catch(err => console.log(err))
       ;
@@ -261,8 +262,7 @@ class Board {
   }
 
   addPosition() {
-    let newPosition = new Position(this.id);
-    newPosition.persist();
+    let newPosition = new Position(this);
     this.positions.push(newPosition);
     return newPosition;
   }
@@ -288,23 +288,21 @@ class Board {
 }
 
 class Position {
-  constructor(board_id, player_id, game_id) {
+  constructor(board) {
     this.card = null;
-    this.board = Board.find(board_id, player_id, game_id);
+    this.board = board;
     this.persisted = false;
   }
 
   persist() {
     if (this.persisted == false) {
-      FetchAdapter.postData(`http://localhost:3000/games/${Dementia.game.id}/players`, {
-        player: {
-          name: this.name,
-          game_id: this.game_id
-        }
+      return FetchAdapter.postData(`http://localhost:3000/games/${this.board.player.game.id}/players/${this.board.player.id}/boards/${this.board.id}/positions`, {
+        position: { board_id: this.board.id}
       })
         .then(result => {
           this.id = result.data.id;
           this.persisted = true;
+          return result;
         })
         .catch(err => console.log(err))
       ;
@@ -324,8 +322,7 @@ class Position {
   }
 
   addCard(value) {
-    let newCard = new Card(value, this.id, this.board.id, this.board.player.id, this.board.player.game.id);
-    newCard.persist();
+    let newCard = new Card(value, this);
     this.card = newCard;
     return newCard;
   }
@@ -351,15 +348,15 @@ class Position {
 }
 
 class Card {
-  constructor(value, position_id, board_id, player_id, game_id) {
+  constructor(value, position) {
     this.value = value;
-    this.position = Position.find(position_id, board_id, player_id, game_id);
+    this.position = position;
     this.persisted = false;
   }
 
   persist() {
     if (this.persisted == false) {
-      FetchAdapter.postData(`http://localhost:3000/games/${this.position.board.player.game.id}/players/${this.position.board.player.id}/boards/${this.position.board.id}/cards`, {
+      return FetchAdapter.postData(`http://localhost:3000/games/${this.position.board.player.game.id}/players/${this.position.board.player.id}/boards/${this.position.board.id}/positions/${this.position.id}/cards`, {
         card: {
           value: this.value,
           position_id: this.position.id
@@ -368,6 +365,7 @@ class Card {
         .then(result => {
           this.id = result.data.id;
           this.persisted = true;
+          return result;
         })
         .catch(err => console.log(err))
       ;
@@ -403,7 +401,14 @@ class FetchAdapter {
         },
         body: JSON.stringify(data)
       }
-    ).then(response => response.json());
+    ).then(response => {
+        if(!response.ok) {
+          response.text().then(text => { throw Error(text) });
+        }
+       else {
+        return response.json();
+       }
+    });
   }
 
   static updateData(url, data) {
