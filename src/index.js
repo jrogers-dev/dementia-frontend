@@ -450,6 +450,14 @@ document.addEventListener('click', function(e) {
     Dementia.displayGame();
     Dementia.playGame();
   }
+  else if (e.target.id.includes("pos")) {
+    if (e.target.classList.contains("animate-bounce")) {
+      e.target.classList.remove("animate-bounce");
+    }
+    else {
+      e.target.classList.add("animate-bounce");
+    }
+  }
 });
 
 
