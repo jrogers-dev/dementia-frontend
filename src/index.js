@@ -273,6 +273,34 @@ class Board {
     return newPosition;
   }
 
+  shuffleCards() {
+    let cardArray = [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9];
+    let cardsLeft = cardArray.length - 1;
+    let randoCalrissian = 0;
+    let valueMover = 0;
+  
+    // While there remain elements to shuffle…
+    while (cardsLeft) {
+  
+      // Pick a remaining element…
+      randoCalrissian = Math.floor(Math.random() * cardsLeft);
+  
+      // And swap it with the current element.
+      valueMover = cardArray[cardsLeft];
+      cardArray[cardsLeft] = cardArray[randoCalrissian];
+      cardArray[randoCalrissian] = valueMover;
+      cardsLeft--;
+    }
+    console.log(cardArray); 
+
+    this.positions.forEach( position => {
+      position.card.value = cardArray[0];
+      cardArray.shift();
+    });
+  }
+
+
+
   static find(id, player_id, game_id) {
     let tempBoard =  new Board(player_id); 
     FetchAdapter.fetchData(`http://localhost:3000/games/${game_id}/players/${player_id}/boards/${id}`)
@@ -465,11 +493,17 @@ document.addEventListener('click', function(e) {
     else {
       if (Dementia.game.players[0].chosenPosition.card.value == position.card.value) {
         setTimeout( () => {
+          Dementia.game.players[0].chosenPosition.element.classList.toggle("animate-bounce");
           Dementia.game.players[0].chosenPosition.element.classList.toggle("opacity-0");
-          Dementia.game.players[0].chosenPosition.element.classList.toggle("pointer-events-none");
           position.element.classList.toggle("opacity-0");
           position.element.classList.toggle("pointer-events-none");
           Dementia.game.players[0].score++;
+          if (Dementia.game.players[0].score % 10 == 0) {
+            Dementia.game.players[0].boards[0].shuffleCards();
+            Dementia.game.players[0].boards[0].positions.forEach( position => position.element.firstChild.textContent = "?");
+            Dementia.game.players[0].boards[0].positions.forEach( position => position.element.classList.toggle("opacity-0"));
+            Dementia.game.players[0].boards[0].positions.forEach( position => position.element.classList.toggle("pointer-events-none"));
+          }
         }, 1000);
       }
       else {
