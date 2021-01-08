@@ -30,8 +30,14 @@ class Dementia {
        let positionObj = boardObj.addPosition();
        await positionObj.persist();
        positionObj.element = document.querySelector(`#pos-${i}`);
-       let cardObj = positionObj.addCard(i);
-       await cardObj.persist();
+       if (i > 9) {
+        let cardObj = positionObj.addCard(i - 10);
+        await cardObj.persist();
+       }
+       else {
+        let cardObj = positionObj.addCard(i);
+        await cardObj.persist();
+       }
     }
   }
 
@@ -454,15 +460,21 @@ document.addEventListener('click', function(e) {
     if (Dementia.game.turn % 2 == 1) {
       Dementia.game.players[0].chosenPosition = position;
       e.target.classList.toggle("animate-bounce");
+      e.target.classList.toggle("pointer-events-none");
     }
     else {
       if (Dementia.game.players[0].chosenPosition.card.value == position.card.value) {
-        Dementia.game.players[0].chosenPosition.element.classList.toggle("hidden");
-        position.classList.toggle("hidden");
-        Dementia.game.players[0].score++;
+        setTimeout( () => {
+          Dementia.game.players[0].chosenPosition.element.classList.toggle("opacity-0");
+          Dementia.game.players[0].chosenPosition.element.classList.toggle("pointer-events-none");
+          position.element.classList.toggle("opacity-0");
+          position.element.classList.toggle("pointer-events-none");
+          Dementia.game.players[0].score++;
+        }, 1000);
       }
       else {
         setTimeout( () => {
+          Dementia.game.players[0].chosenPosition.element.classList.toggle("pointer-events-none");
           Dementia.game.players[0].chosenPosition.element.classList.toggle("animate-bounce");
           Dementia.game.players[0].chosenPosition.element.firstChild.textContent = "?";
           position.element.firstChild.textContent = "?";
