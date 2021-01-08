@@ -10,11 +10,6 @@ class Dementia {
     return this.fc;
   }
 
-  static bottomContainer() {
-    this.bc ||= document.querySelector('#bottom');
-    return this.bc;
-  }
-
   static newGame() {
     this.game = new Game();
     this.game.persist();
@@ -163,6 +158,7 @@ class Player {
   constructor(name, game) {
     this.id = null;
     this.name = name;
+    this.score = 0;
     this.game = game;
     this.persisted = false;
   }
@@ -452,7 +448,27 @@ document.addEventListener('click', function(e) {
     Dementia.playGame();
   }
   else if (e.target.id.includes("pos")) {
-    console.log(Dementia.game.players[0].boards[0].positions[e.target.id.split("-")[1]]);
+    Dementia.game.turn++;
+    position = Dementia.game.players[0].boards[0].positions[e.target.id.split("-")[1]];
+    e.target.firstChild.textContent = position.card.value;
+    if (Dementia.game.turn % 2 == 1) {
+      Dementia.game.players[0].chosenPosition = position;
+      e.target.classList.toggle("animate-bounce");
+    }
+    else {
+      if (Dementia.game.players[0].chosenPosition.card.value == position.card.value) {
+        Dementia.game.players[0].chosenPosition.element.classList.toggle("hidden");
+        position.classList.toggle("hidden");
+        Dementia.game.players[0].score++;
+      }
+      else {
+        setTimeout( () => {
+          Dementia.game.players[0].chosenPosition.element.classList.toggle("animate-bounce");
+          Dementia.game.players[0].chosenPosition.element.firstChild.textContent = "?";
+          position.element.firstChild.textContent = "?";
+        }, 1000);
+      }
+    }
   }
 });
 
