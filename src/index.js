@@ -21,24 +21,22 @@ class Dementia {
     let playerName = document.querySelector("#inputPlayerName").value;
 
     let playerObj = this.game.addPlayer(playerName);
+    this.player = playerObj;
     await playerObj.persist();
 
     let boardObj = playerObj.addBoard();
+    this.board = boardObj;
     await boardObj.persist();
 
     for (let i = 0; i < 20; i++) {
-       let positionObj = boardObj.addPosition();
-       await positionObj.persist();
-       positionObj.element = document.querySelector(`#pos-${i}`);
-       if (i > 9) {
-        let cardObj = positionObj.addCard(i - 10);
-        await cardObj.persist();
-       }
-       else {
-        let cardObj = positionObj.addCard(i);
-        await cardObj.persist();
-       }
+      let positionObj = boardObj.addPosition();
+      await positionObj.persist();
+      positionObj.element = document.querySelector(`#pos-${i}`);
+      
+      let cardObj = positionObj.addCard(0);
+      await cardObj.persist();
     }
+    Dementia.board.shuffleCards();
   }
 
   static playGame() {
@@ -232,6 +230,7 @@ class Board {
   constructor(player) {
     this.clear = false;
     this.rotation = 0;
+    this.locked = false;
     this.player = player;
     this.persisted = false;
   }
@@ -273,7 +272,8 @@ class Board {
     return newPosition;
   }
 
-  shuffleCards() {
+  async shuffleCards() {
+    this.lock();
     let cardArray = [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9];
     let cardsLeft = cardArray.length - 1;
     let randoCalrissian = 0;
@@ -291,15 +291,31 @@ class Board {
       cardArray[randoCalrissian] = valueMover;
       cardsLeft--;
     }
-    console.log(cardArray); 
 
-    this.positions.forEach( position => {
-      position.card.value = cardArray[0];
-      cardArray.shift();
-    });
+    console.log(cardArray);
+    for (let i = 0; i < 20; i++) {
+      let position = this.positions[i];
+      position.card.value = cardArray[i];
+      await position.card.update();
+    }
+    this.unlock();
   }
 
+  lock() {
+    if (!this.locked) {
+      let tc = document.getElementById("table-container");
+      tc.classList.toggle("pointer-events-none");
+      this.locked = true;
+    }
+  }
 
+  unlock() {
+    if (this.locked) {
+      let tc = document.getElementById("table-container");
+      tc.classList.toggle("pointer-events-none");
+      this.locked = false;
+    }
+  }
 
   static find(id, player_id, game_id) {
     let tempBoard =  new Board(player_id); 
@@ -409,6 +425,18 @@ class Card {
     }
   }
 
+  update() {
+    return FetchAdapter.updateData(
+      `http://localhost:3000/games/${this.position.board.player.game.id}/players/${this.position.board.player.id}/boards/${this.position.board.id}/positions/${this.position.id}/cards/${this.id}`, 
+      {
+        card: {
+          value: this.value,
+          position_id: this.position.id
+        }
+      }
+    );
+  }
+
   destroy() {
     FetchAdapter.destroyData(`http://localhost:3000/games/${this.game_id}/players/${this.id}`)
       .then(result => console.log(result));
@@ -446,7 +474,24 @@ class FetchAdapter {
   }
 
   static updateData(url, data) {
-
+    return fetch(
+      url,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(data)
+      }
+    ).then(response => {
+        if(!response.ok) {
+          response.text().then(text => { throw Error(text) });
+        }
+       else {
+        return response.json();
+       }
+    });
   }
 
   static destroyData(url) {
@@ -492,6 +537,7 @@ document.addEventListener('click', function(e) {
     }
     else {
       if (Dementia.game.players[0].chosenPosition.card.value == position.card.value) {
+        Dementia.game.players[0].boards[0].lock();
         setTimeout( () => {
           Dementia.game.players[0].chosenPosition.element.classList.toggle("animate-bounce");
           Dementia.game.players[0].chosenPosition.element.classList.toggle("opacity-0");
@@ -504,14 +550,17 @@ document.addEventListener('click', function(e) {
             Dementia.game.players[0].boards[0].positions.forEach( position => position.element.classList.toggle("opacity-0"));
             Dementia.game.players[0].boards[0].positions.forEach( position => position.element.classList.toggle("pointer-events-none"));
           }
-        }, 1000);
+          Dementia.game.players[0].boards[0].unlock();
+        }, 1000); 
       }
       else {
+        Dementia.game.players[0].boards[0].lock();
         setTimeout( () => {
           Dementia.game.players[0].chosenPosition.element.classList.toggle("pointer-events-none");
           Dementia.game.players[0].chosenPosition.element.classList.toggle("animate-bounce");
           Dementia.game.players[0].chosenPosition.element.firstChild.textContent = "?";
           position.element.firstChild.textContent = "?";
+          Dementia.game.players[0].boards[0].unlock();
         }, 1000);
       }
     }
