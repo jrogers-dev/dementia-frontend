@@ -34,15 +34,14 @@ class Dementia {
     for (let i = 0; i < 20; i++) {
        let positionObj = boardObj.addPosition();
        await positionObj.persist();
+       positionObj.element = document.querySelector(`#pos-${i}`);
        let cardObj = positionObj.addCard(i);
        await cardObj.persist();
     }
-
-    this.game.state = 2;
   }
 
   static playGame() {
-    
+    this.game.state = 2;
   }
 
   static displayLanding() {
@@ -56,13 +55,12 @@ class Dementia {
     btnNewGame.id = "btnNewGame";
     btnNewGame.textContent = "New Game";
     btnNewGame.classList.add("bg-blue-500", "rounded", "px-2");
-    Dementia.bottomContainer().appendChild(btnNewGame);
+    Dementia.fieldContainer().appendChild(btnNewGame);
   }
 
   static displaySetup() {
     removeAllChildNodes(Dementia.marqueeContainer());
-    removeAllChildNodes(Dementia.fieldContainer());
-    removeAllChildNodes(Dementia.bottomContainer());
+    document.querySelector("#btnNewGame").remove();
 
     let setupBanner = document.createElement("span");
     setupBanner.id = "setupBanner";
@@ -81,13 +79,15 @@ class Dementia {
     btnStartGame.id = "btnStartGame";
     btnStartGame.textContent = "Let's Go!";
     btnStartGame.classList.add("bg-green-500", "rounded", "px-2");
-    Dementia.bottomContainer().appendChild(btnStartGame);
+    Dementia.fieldContainer().appendChild(btnStartGame);
   }
 
   static displayGame() {
     removeAllChildNodes(Dementia.marqueeContainer());
-    removeAllChildNodes(Dementia.fieldContainer());
-    removeAllChildNodes(Dementia.bottomContainer());
+    document.querySelector("#btnStartGame").remove();
+    document.querySelector("#inputPlayerName").remove();
+
+    document.querySelector("#table-container").classList.remove("hidden");
 
     let gameBanner = document.createElement("span");
     gameBanner.id = "gameBanner";
@@ -103,6 +103,7 @@ class Game {
   constructor() {
     this.id = null;
     this.state = 0;
+    this.turn = 0;
     this.persisted = false;
   }
 
@@ -451,12 +452,7 @@ document.addEventListener('click', function(e) {
     Dementia.playGame();
   }
   else if (e.target.id.includes("pos")) {
-    if (e.target.classList.contains("animate-bounce")) {
-      e.target.classList.remove("animate-bounce");
-    }
-    else {
-      e.target.classList.add("animate-bounce");
-    }
+    console.log(Dementia.game.players[0].boards[0].positions[e.target.id.split("-")[1]]);
   }
 });
 
