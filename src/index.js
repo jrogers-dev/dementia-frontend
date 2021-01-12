@@ -41,6 +41,24 @@ class Dementia {
 
   static playGame() {
     this.game.state = 2;
+    this.game.time = 121;
+
+    setInterval( 
+      () => {
+        if (this.game.state == 2) {
+          this.game.time--;
+          document.getElementById("time-tag").textContent = this.game.time;
+          if (this.game.time == 0) {
+            Dementia.endGame();
+          }
+        }
+      },
+      1000);
+  }
+
+  static endGame() {
+    this.game.state = 3;
+    this.game.players[0].boards[0].lock();
   }
 
   static displayLanding() {
@@ -88,14 +106,14 @@ class Dementia {
 
     document.querySelector("#table-container").classList.remove("hidden");
 
-    let nameContainer = document.createElement("div");
-    nameContainer.classList.add("flex", "w-1/5", "justify-start");
-    let nameTag = document.createElement("span");
-    nameTag.id = "name-tag";
-    nameTag.textContent = Dementia.game.players[0].name;
-    nameTag.classList.add("text-4xl", "text-red-500", "ml-4");
-    Dementia.marqueeContainer().appendChild(nameContainer);
-    nameContainer.appendChild(nameTag);
+    let timeContainer = document.createElement("div");
+    timeContainer.classList.add("flex", "w-1/5", "justify-start");
+    let timeTag = document.createElement("span");
+    timeTag.id = "time-tag";
+    timeTag.textContent = Dementia.game.time;
+    timeTag.classList.add("text-4xl", "text-red-500", "ml-4");
+    Dementia.marqueeContainer().appendChild(timeContainer);
+    timeContainer.appendChild(timeTag);
 
     let bannerContainer = document.createElement("div");
     bannerContainer.classList.add("flex", "w-3/5", "justify-center");
@@ -565,6 +583,7 @@ document.addEventListener('click', function(e) {
           position.element.classList.toggle("opacity-0");
           position.element.classList.toggle("pointer-events-none");
           Dementia.game.players[0].score++;
+          document.getElementById("scoreDisplay").textContent = Dementia.game.players[0].score;
           if (Dementia.game.players[0].score % 10 == 0) {
             Dementia.game.players[0].boards[0].shuffleCards();
             Dementia.game.players[0].boards[0].positions.forEach( position => position.element.firstChild.textContent = "?");
