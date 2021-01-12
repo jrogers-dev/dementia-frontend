@@ -6,9 +6,12 @@
   </head>
   <body>
     <div id="main" class="h-screen">
-      <div id="marquee" class="flex flex-row bg-gray-900 items-center"></div>
+      <div id="marquee" class="flex flex-row bg-gray-900 items-center justify-center"></div>
 
       <div id="field" class="flex flex-col h-full bg-gray-700 items-center justify-center">
+        <div id="test" class="absolute top-50 left-50 z-30 hidden">
+          <span id="response" class="text-8xl text-red-500 z-40">WRONG!</span>
+        </div>
         <div id="table-container" class="container hidden">
         <div id="row1" class="flex flex-row justify-center">
           <div id="pos-0" class="flex items-center justify-center h-28 w-20 m-4 bg-purple-900 border-black border-4 rounded-lg"><span class="text-6xl pointer-events-none">?</span></div>
