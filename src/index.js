@@ -41,14 +41,19 @@ class Dementia {
 
   static playGame() {
     this.game.state = 2;
-    this.game.time = 121;
+    this.game.time = 21;
+    this.timeTag = document.getElementById("timeTag");
 
-    setInterval( 
+    this.interval = setInterval( 
       () => {
         if (this.game.state == 2) {
           this.game.time--;
-          document.getElementById("time-tag").textContent = this.game.time;
+          this.timeTag.textContent = this.game.time;
+          if (this.game.time == 10) {
+            this.timeTag.classList.add("animate-ping");
+          }
           if (this.game.time == 0) {
+            this.timeTag.classList.remove("animate-ping");
             Dementia.endGame();
           }
         }
@@ -57,8 +62,31 @@ class Dementia {
   }
 
   static endGame() {
+    clearInterval(this.interval);
     this.game.state = 3;
     this.game.players[0].boards[0].lock();
+    this.game.players[0].boards[0].positions.forEach(
+      position => {
+        position.element.classList.add("animate-spin");
+      }
+    );
+    let response = document.getElementById("response")
+    response.textContent = "You Lose!";
+    response.classList.remove("hidden");
+
+    let btnReload = document.createElement("button");
+    btnReload.id = "btnReload";
+    btnReload.textContent = "'Ave Anotha' Go, Mate!";
+    btnReload.classList.add("text-4xl", "bg-green-500", "rounded", "px-2", "m-8");
+
+    let btnSave = document.createElement("button");
+    btnSave.id = "btnSave";
+    btnSave.textContent = "Save Yer High Score";
+    btnSave.classList.add("text-4xl", "bg-green-500", "rounded", "px-2", "m-8");
+
+    let popup = document.getElementById("popup");
+    popup.appendChild(btnReload);
+    popup.appendChild(btnSave);
   }
 
   static displayLanding() {
@@ -109,7 +137,7 @@ class Dementia {
     let timeContainer = document.createElement("div");
     timeContainer.classList.add("flex", "w-1/5", "justify-start");
     let timeTag = document.createElement("span");
-    timeTag.id = "time-tag";
+    timeTag.id = "timeTag";
     timeTag.textContent = Dementia.game.time;
     timeTag.classList.add("text-4xl", "text-red-500", "ml-4");
     Dementia.marqueeContainer().appendChild(timeContainer);
