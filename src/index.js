@@ -88,23 +88,32 @@ class Dementia {
 
     document.querySelector("#table-container").classList.remove("hidden");
 
+    let nameContainer = document.createElement("div");
+    nameContainer.classList.add("flex", "w-1/5", "justify-start");
     let nameTag = document.createElement("span");
     nameTag.id = "name-tag";
     nameTag.textContent = Dementia.game.players[0].name;
-    nameTag.classList.add("text-4xl", "text-red-500");
-    Dementia.marqueeContainer().appendChild(nameTag);
+    nameTag.classList.add("text-4xl", "text-red-500", "ml-4");
+    Dementia.marqueeContainer().appendChild(nameContainer);
+    nameContainer.appendChild(nameTag);
 
+    let bannerContainer = document.createElement("div");
+    bannerContainer.classList.add("flex", "w-3/5", "justify-center");
     let gameBanner = document.createElement("span");
     gameBanner.id = "gameBanner";
     gameBanner.textContent = "Remember Not to Forget!";
     gameBanner.classList.add("text-4xl", "text-gray-300");
-    Dementia.marqueeContainer().appendChild(gameBanner);
+    Dementia.marqueeContainer().appendChild(bannerContainer);
+    bannerContainer.appendChild(gameBanner);
 
+    let scoreContainer = document.createElement("div");
+    scoreContainer.classList.add("flex", "w-1/5", "justify-end");
     let scoreDisplay = document.createElement("span");
     scoreDisplay.id = "scoreDisplay";
     scoreDisplay.textContent = Dementia.game.players[0].score;
-    scoreDisplay.classList.add("text-4xl", "text-red-500");
-    Dementia.marqueeContainer().appendChild(scoreDisplay);
+    scoreDisplay.classList.add("text-4xl", "text-red-500", "mr-4");
+    Dementia.marqueeContainer().appendChild(scoreContainer);
+    scoreContainer.appendChild(scoreDisplay);
   }
 }
 
