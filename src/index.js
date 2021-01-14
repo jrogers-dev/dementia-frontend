@@ -9,9 +9,10 @@ class Dementia {
     //Marquee container is at the top of the page and holds three inner divs
     this.w.marquee = document.createElement("div");
     this.w.marquee.id = "marquee";
-    this.w.marquee.classList.add("flex", "flex-row", "absolute", "top-0", "w-screen", "h-14", "bg-gray-300", "outline-gray", "shadow-xl", "z-10");
+    this.w.marquee.classList.add("flex", "flex-row", "absolute", "top-0", "w-screen", "h-14", "bg-gray-700", "outline-gray", "shadow-xl", "z-10");
     this.w.main.appendChild(this.w.marquee);
 
+    //Marquee child divs to hold text
     this.w.marqLeft = document.createElement("div");
     this.w.marqLeft.id = "marqLeft";
     this.w.marqLeft.classList.add("flex", "w-1/5");
@@ -33,6 +34,36 @@ class Dementia {
     this.w.field.id = "field";
     this.w.field.classList.add("flex", "flex-col", "h-full", "bg-gray-400", "items-center");
     this.w.main.appendChild(this.w.field);
+
+    //Table-container holds the rows and single elements of a tailwind grid
+    this.w.tableContainer = document.createElement("div");
+    this.w.tableContainer.id = "table-container";
+    this.w.tableContainer.classList.add("container", "absolute", "top-16");
+    this.w.field.appendChild(this.w.tableContainer);
+
+    //The actual table is constructed here with 4 rows of 5 positions each
+    this.w.row = [];
+    this.w.pos = [];
+    this.w.pSpan = [];
+    for (let i = 1; i < 5; i++) {
+      this.w.row[i] = document.createElement("div");
+      this.w.row[i].id = `row-${i}`;
+      this.w.row[i].classList.add("flex", "flex-row", "justify-center");
+      this.w.tableContainer.appendChild(this.w.row[i]);
+      //Fancy mathin'
+      for (let j = 0 + ((i-1) * 5) ; j < 5 + ((i-1) * 5); j++) {
+        this.w.pos[j] = document.createElement("div");
+        this.w.pos[j].id = `pos-${j}`;
+        this.w.pos[j].classList.add("flex", "items-center", "justify-center", "h-28", "w-20", "m-4", "bg-gray-400", "border-gray-500", "border-4", "rounded-lg", "z-10", "shadow-xl");
+        this.w.row[i].appendChild(this.w.pos[j]);
+
+        this.w.pSpan[j] = document.createElement("div");
+        this.w.pSpan[j].id = `pSpan-${j}`;
+        this.w.pSpan[j].classList.add("text-6xl", "pointer-events-none");
+        this.w.pSpan[j].textContent = "?";
+        this.w.pos[j].appendChild(this.w.pSpan[j]);
+      }
+    }
   }
 
   static newGame() {
