@@ -599,24 +599,24 @@ document.addEventListener('click', function(e) {
     e.target.firstChild.textContent = position.card.value;
     if (Dementia.game.turn % 2 == 1) {
       Dementia.game.players[0].chosenPosition = position;
-      e.target.classList.toggle("animate-bounce");
-      e.target.classList.toggle("pointer-events-none");
+      e.target.classList.add("animate-bounce");
+      e.target.classList.add("pointer-events-none");
     }
     else {
       if (Dementia.game.players[0].chosenPosition.card.value == position.card.value) {
         Dementia.game.players[0].boards[0].lock();
         setTimeout( () => {
-          Dementia.game.players[0].chosenPosition.element.classList.toggle("animate-bounce");
-          Dementia.game.players[0].chosenPosition.element.classList.toggle("opacity-0");
-          position.element.classList.toggle("opacity-0");
-          position.element.classList.toggle("pointer-events-none");
+          Dementia.game.players[0].chosenPosition.element.classList.remove("animate-bounce");
+          Dementia.game.players[0].chosenPosition.element.classList.add("opacity-0");
+          position.element.classList.add("opacity-0");
+          position.element.classList.add("pointer-events-none");
           Dementia.game.players[0].score++;
           document.getElementById("scoreDisplay").textContent = Dementia.game.players[0].score;
           if (Dementia.game.players[0].score % 10 == 0) {
             Dementia.game.players[0].boards[0].shuffleCards();
             Dementia.game.players[0].boards[0].positions.forEach( position => position.element.firstChild.textContent = "?");
-            Dementia.game.players[0].boards[0].positions.forEach( position => position.element.classList.toggle("opacity-0"));
-            Dementia.game.players[0].boards[0].positions.forEach( position => position.element.classList.toggle("pointer-events-none"));
+            Dementia.game.players[0].boards[0].positions.forEach( position => position.element.classList.remove("opacity-0"));
+            Dementia.game.players[0].boards[0].positions.forEach( position => position.element.classList.remove("pointer-events-none"));
           }
           Dementia.game.players[0].boards[0].unlock();
         }, 1000); 
@@ -624,8 +624,8 @@ document.addEventListener('click', function(e) {
       else {
         Dementia.game.players[0].boards[0].lock();
         setTimeout( () => {
-          Dementia.game.players[0].chosenPosition.element.classList.toggle("pointer-events-none");
-          Dementia.game.players[0].chosenPosition.element.classList.toggle("animate-bounce");
+          Dementia.game.players[0].chosenPosition.element.classList.remove("pointer-events-none");
+          Dementia.game.players[0].chosenPosition.element.classList.remove("animate-bounce");
           Dementia.game.players[0].chosenPosition.element.firstChild.textContent = "?";
           position.element.firstChild.textContent = "?";
           Dementia.game.players[0].boards[0].unlock();
