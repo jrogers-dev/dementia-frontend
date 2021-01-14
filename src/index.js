@@ -9,7 +9,7 @@ class Dementia {
     //Marquee container is at the top of the page and holds three inner divs
     this.w.marquee = document.createElement("div");
     this.w.marquee.id = "marquee";
-    this.w.marquee.classList.add("flex", "flex-row", "absolute", "top-0", "w-screen", "h-14", "bg-gray-600", "outline-gray", "shadow-xl", "z-10");
+    this.w.marquee.classList.add("flex", "flex-row", "items-center", "absolute", "top-0", "w-screen", "h-14", "bg-gray-600", "outline-gray", "shadow-xl", "z-10");
     this.w.main.appendChild(this.w.marquee);
 
     //Marquee child divs to hold spans for text
@@ -53,7 +53,7 @@ class Dementia {
     //Table-container holds the rows and single elements of a tailwind grid
     this.w.tableContainer = document.createElement("div");
     this.w.tableContainer.id = "table-container";
-    this.w.tableContainer.classList.add("container", "absolute", "top-16", "hidden");
+    this.w.tableContainer.classList.add("container", "absolute", "top-16");
     this.w.field.appendChild(this.w.tableContainer);
 
     //The actual table is constructed here with 4 rows of 5 positions each
@@ -83,23 +83,24 @@ class Dementia {
     //Popup floats over everything else and displays messages and response buttons
     this.w.popup = document.createElement("div");
     this.w.popup.id = "popup";
-    this.w.popup.classList.add("flex", "flex-col", "rounded-lg", "h-72", "w-96", "bg-gray-500", "absolute", "top-48", "z-20", "shadow-xl");
+    this.w.popup.classList.add("flex", "flex-col", "rounded-lg", "w-96", "bg-gray-500", "absolute", "top-48", "z-20", "shadow-xl");
     this.w.field.appendChild(this.w.popup);
 
     this.w.popMessage = document.createElement("span");
     this.w.popMessage.id = "popMessage";
-    this.w.popMessage.classList.add("text-4xl", "text-gray-800");
+    this.w.popMessage.classList.add("text-6xl", "text-gray-800", "m-2", "p-2", "text-center");
     this.w.popup.appendChild(this.w.popMessage);
 
     this.w.popInput = document.createElement("input");
     this.w.popInput.id = "popInput";
-    this.w.popInput.classList.add("text-4xl", "text-gray-800", "mx-2", "mt-2", "mb-1", "rounded-lg", "px-2");
+    this.w.popInput.placeholder = "Jane Doe";
+    this.w.popInput.classList.add("text-4xl", "text-gray-800", "mx-2", "mt-2", "mb-1", "rounded-lg", "px-2", "py-1", "outline-none");
     this.w.popup.appendChild(this.w.popInput);
 
     this.w.btnNewGame = document.createElement("button");
     this.w.btnNewGame.id = "btnNewGame";
     this.w.btnNewGame.textContent = "Probably!";
-    this.w.btnNewGame.classList.add("text-2xl", "bg-gray-400", "mx-2", "my-1", "rounded-lg", "px-2");
+    this.w.btnNewGame.classList.add("text-2xl", "bg-gray-400", "mx-2", "mt-1", "mb-2", "rounded-lg", "px-2");
     this.w.popup.appendChild(this.w.btnNewGame);
 
     this.w.btnStartGame = document.createElement("button");
@@ -108,10 +109,12 @@ class Dementia {
     this.w.btnStartGame.classList.add("text-2xl", "bg-gray-400", "mx-2", "mt-1", "mb-2", "rounded-lg", "px-2");
     this.w.popup.appendChild(this.w.btnStartGame);
 
-    timeTag.textContent = Dementia.game.time;
+    this.w.tableContainer.classList.add("hidden");
+    this.w.popup.classList.add("hidden");
+    this.w.popInput.classList.add("hidden");
+    this.w.btnStartGame.classList.add("hidden");
 
-
-    scoreDisplay.textContent = Dementia.game.players[0].score;
+    Dementia.displayLanding();
   }
 
   static newGame() {
@@ -145,20 +148,20 @@ class Dementia {
 
   static playGame() {
     this.game.state = 2;
-    this.game.time = 21;
-    this.timeTag = document.getElementById("timeTag");
+    this.game.time = 121;
 
     this.interval = setInterval( 
       () => {
         if (this.game.state == 2) {
           this.game.time--;
-          this.timeTag.textContent = this.game.time;
+          this.w.mlSpan.textContent = this.game.time;
           if (this.game.time == 10) {
-            this.timeTag.classList.add("animate-ping");
+            this.w.mlSpan.classList.add("animate-ping");
           }
           if (this.game.time == 0) {
-            this.timeTag.classList.remove("animate-ping");
+            this.w.mlSpan.classList.remove("animate-ping");
             Dementia.endGame();
+            Dementia.displayEnd();
           }
         }
       },
@@ -171,44 +174,41 @@ class Dementia {
     this.game.players[0].boards[0].lock();
     this.game.players[0].boards[0].positions.forEach(
       position => {
+        position.element.classList.remove("animate-bounce")
         position.element.classList.add("animate-spin");
       }
     );
-    let response = document.getElementById("response")
-    response.textContent = "You Lose!";
-    response.classList.remove("hidden");
-
-    let btnReload = document.createElement("button");
-    btnReload.id = "btnReload";
-    btnReload.textContent = "'Ave Anotha' Go, Mate!";
-    btnReload.classList.add("text-4xl", "bg-green-500", "rounded", "px-2", "m-8");
-
-    let btnSave = document.createElement("button");
-    btnSave.id = "btnSave";
-    btnSave.textContent = "Save Yer High Score";
-    btnSave.classList.add("text-4xl", "bg-green-500", "rounded", "px-2", "m-8");
-
-    let popup = document.getElementById("popup");
-    popup.appendChild(btnReload);
-    popup.appendChild(btnSave);
   }
 
   static displayLanding() {
     this.w.mcSpan.textContent = "DEMENTIA!!!";
+    this.w.popMessage.textContent = "New Game?";
+    this.w.popup.classList.remove("hidden");
+    this.w.btnNewGame.classList.remove("hidden");
   }
 
   static displaySetup() {
     this.w.mcSpan.textContent = "Game Setup";
+    this.w.popMessage.textContent = "Got a name?";
+    this.w.btnNewGame.classList.add("hidden");
+    this.w.popInput.classList.remove("hidden");
+    this.w.btnStartGame.classList.remove("hidden");
   }
 
   static displayGame() {
-    removeAllChildNodes(Dementia.marqueeContainer());
-    document.querySelector("#btnStartGame").remove();
-    document.querySelector("#inputPlayerName").remove();
+    this.w.mcSpan.textContent = "Remember Not to Forget!";
+    this.w.mlSpan.textContent = Dementia.game.time;
+    this.w.mrSpan.textContent = Dementia.game.players[0].score;
+    this.w.popup.classList.add("hidden", "pointer-events-none");
+    this.w.tableContainer.classList.remove("hidden");
+  }
 
-    document.querySelector("#table-container").classList.remove("hidden");
-
-    
+  static displayEnd() {
+    this.w.mcSpan.textContent ="It's Over!";
+    this.w.popInput.classList.add("hidden");
+    this.w.btnStartGame.classList.add("hidden");
+    this.w.popup.classList.remove("hidden", "pointer-events-none");
+    this.w.popMessage.textContent = "Too Bad, sir!\nBetter Luck Next Time";
   }
 }
 
@@ -660,7 +660,7 @@ document.addEventListener('click', function(e) {
           position.element.classList.add("opacity-0");
           position.element.classList.add("pointer-events-none");
           Dementia.game.players[0].score++;
-          document.getElementById("scoreDisplay").textContent = Dementia.game.players[0].score;
+          Dementia.w.mrSpan.textContent = Dementia.game.players[0].score;
           if (Dementia.game.players[0].score % 10 == 0) {
             Dementia.game.players[0].boards[0].shuffleCards();
             Dementia.game.players[0].boards[0].positions.forEach( position => position.element.firstChild.textContent = "?");
@@ -683,12 +683,3 @@ document.addEventListener('click', function(e) {
     }
   }
 });
-
-
-
-//-----------------------------------HELPERS---------------------------------------------
-function removeAllChildNodes(parent) {
-  while (parent.firstChild) {
-      parent.removeChild(parent.firstChild);
-  }
-}
