@@ -9,24 +9,39 @@ class Dementia {
     //Marquee container is at the top of the page and holds three inner divs
     this.w.marquee = document.createElement("div");
     this.w.marquee.id = "marquee";
-    this.w.marquee.classList.add("flex", "flex-row", "absolute", "top-0", "w-screen", "h-14", "bg-gray-700", "outline-gray", "shadow-xl", "z-10");
+    this.w.marquee.classList.add("flex", "flex-row", "absolute", "top-0", "w-screen", "h-14", "bg-gray-600", "outline-gray", "shadow-xl", "z-10");
     this.w.main.appendChild(this.w.marquee);
 
-    //Marquee child divs to hold text
+    //Marquee child divs to hold spans for text
     this.w.marqLeft = document.createElement("div");
     this.w.marqLeft.id = "marqLeft";
-    this.w.marqLeft.classList.add("flex", "w-1/5");
+    this.w.marqLeft.classList.add("flex", "w-1/5", "justify-start");
     this.w.marquee.appendChild(this.w.marqLeft);
+
+    this.w.mlSpan = document.createElement("span");
+    this.w.mlSpan.id = "mlSpan";
+    this.w.mlSpan.classList.add("text-4xl", "text-gray-300");
+    this.w.marqLeft.appendChild(this.w.mlSpan);
 
     this.w.marqCenter = document.createElement("div");
     this.w.marqCenter.id = "marqCenter";
-    this.w.marqCenter.classList.add("flex", "w-3/5");
+    this.w.marqCenter.classList.add("flex", "w-3/5", "justify-center");
     this.w.marquee.appendChild(this.w.marqCenter);
+
+    this.w.mcSpan = document.createElement("span");
+    this.w.mcSpan.id = "mcSpan";
+    this.w.mcSpan.classList.add("text-4xl", "text-gray-300");
+    this.w.marqCenter.appendChild(this.w.mcSpan);
 
     this.w.marqRight = document.createElement("div");
     this.w.marqRight.id = "marqRight";
-    this.w.marqRight.classList.add("flex", "w-1/5");
+    this.w.marqRight.classList.add("flex", "w-1/5", "justify-end");
     this.w.marquee.appendChild(this.w.marqRight);
+
+    this.w.mrSpan = document.createElement("span");
+    this.w.mrSpan.id = "mrSpan";
+    this.w.mrSpan.classList.add("text-4xl", "text-gray-300");
+    this.w.marqRight.appendChild(this.w.mrSpan);
 
 
     //Field is where the game is played, buttons are pushed, etc.
@@ -38,7 +53,7 @@ class Dementia {
     //Table-container holds the rows and single elements of a tailwind grid
     this.w.tableContainer = document.createElement("div");
     this.w.tableContainer.id = "table-container";
-    this.w.tableContainer.classList.add("container", "absolute", "top-16");
+    this.w.tableContainer.classList.add("container", "absolute", "top-16", "hidden");
     this.w.field.appendChild(this.w.tableContainer);
 
     //The actual table is constructed here with 4 rows of 5 positions each
@@ -64,6 +79,39 @@ class Dementia {
         this.w.pos[j].appendChild(this.w.pSpan[j]);
       }
     }
+
+    //Popup floats over everything else and displays messages and response buttons
+    this.w.popup = document.createElement("div");
+    this.w.popup.id = "popup";
+    this.w.popup.classList.add("flex", "flex-col", "rounded-lg", "h-72", "w-96", "bg-gray-500", "absolute", "top-48", "z-20", "shadow-xl");
+    this.w.field.appendChild(this.w.popup);
+
+    this.w.popMessage = document.createElement("span");
+    this.w.popMessage.id = "popMessage";
+    this.w.popMessage.classList.add("text-4xl", "text-gray-800");
+    this.w.popup.appendChild(this.w.popMessage);
+
+    this.w.popInput = document.createElement("input");
+    this.w.popInput.id = "popInput";
+    this.w.popInput.classList.add("text-4xl", "text-gray-800", "mx-2", "mt-2", "mb-1", "rounded-lg", "px-2");
+    this.w.popup.appendChild(this.w.popInput);
+
+    this.w.btnNewGame = document.createElement("button");
+    this.w.btnNewGame.id = "btnNewGame";
+    this.w.btnNewGame.textContent = "Probably!";
+    this.w.btnNewGame.classList.add("text-2xl", "bg-gray-400", "mx-2", "my-1", "rounded-lg", "px-2");
+    this.w.popup.appendChild(this.w.btnNewGame);
+
+    this.w.btnStartGame = document.createElement("button");
+    this.w.btnStartGame.id = "btnStartGame";
+    this.w.btnStartGame.textContent = "Whizbang!";
+    this.w.btnStartGame.classList.add("text-2xl", "bg-gray-400", "mx-2", "mt-1", "mb-2", "rounded-lg", "px-2");
+    this.w.popup.appendChild(this.w.btnStartGame);
+
+    timeTag.textContent = Dementia.game.time;
+
+
+    scoreDisplay.textContent = Dementia.game.players[0].score;
   }
 
   static newGame() {
@@ -74,7 +122,7 @@ class Dementia {
   static async setupGame() {
     this.game.state = 1;
 
-    let playerName = document.querySelector("#inputPlayerName").value;
+    let playerName = document.querySelector("#popInput").value;
 
     let playerObj = this.game.addPlayer(playerName);
     this.player = playerObj;
@@ -146,41 +194,11 @@ class Dementia {
   }
 
   static displayLanding() {
-    let spanBanner = document.createElement("span");
-    spanBanner.id = "spanBanner";
-    spanBanner.textContent = "DEMENTIA!!!";
-    spanBanner.classList.add("text-4xl", "text-gray-300");
-    Dementia.marqueeContainer().appendChild(spanBanner);
-
-    let btnNewGame = document.createElement("button");
-    btnNewGame.id = "btnNewGame";
-    btnNewGame.textContent = "New Game";
-    btnNewGame.classList.add("text-4xl", "bg-blue-500", "rounded", "px-2");
-    Dementia.fieldContainer().appendChild(btnNewGame);
+    this.w.mcSpan.textContent = "DEMENTIA!!!";
   }
 
   static displaySetup() {
-    removeAllChildNodes(Dementia.marqueeContainer());
-    document.querySelector("#btnNewGame").remove();
-
-    let setupBanner = document.createElement("span");
-    setupBanner.id = "setupBanner";
-    setupBanner.textContent = "Game Setup";
-    setupBanner.classList.add("text-4xl", "text-gray-300");
-    Dementia.marqueeContainer().appendChild(setupBanner);
-
-    let inputPlayerName = document.createElement("input");
-    inputPlayerName.id = "inputPlayerName";
-    inputPlayerName.type = "text";
-    inputPlayerName.placeholder = "Player Name";
-    inputPlayerName.classList.add("text-4xl", "m-4");
-    Dementia.fieldContainer().appendChild(inputPlayerName);
-
-    let btnStartGame = document.createElement("button");
-    btnStartGame.id = "btnStartGame";
-    btnStartGame.textContent = "Let's Go!";
-    btnStartGame.classList.add("text-4xl", "bg-green-500", "rounded", "px-2");
-    Dementia.fieldContainer().appendChild(btnStartGame);
+    this.w.mcSpan.textContent = "Game Setup";
   }
 
   static displayGame() {
@@ -190,32 +208,7 @@ class Dementia {
 
     document.querySelector("#table-container").classList.remove("hidden");
 
-    let timeContainer = document.createElement("div");
-    timeContainer.classList.add("flex", "w-1/5", "justify-start");
-    let timeTag = document.createElement("span");
-    timeTag.id = "timeTag";
-    timeTag.textContent = Dementia.game.time;
-    timeTag.classList.add("text-4xl", "text-red-500", "ml-4");
-    Dementia.marqueeContainer().appendChild(timeContainer);
-    timeContainer.appendChild(timeTag);
-
-    let bannerContainer = document.createElement("div");
-    bannerContainer.classList.add("flex", "w-3/5", "justify-center");
-    let gameBanner = document.createElement("span");
-    gameBanner.id = "gameBanner";
-    gameBanner.textContent = "Remember Not to Forget!";
-    gameBanner.classList.add("text-4xl", "text-gray-300");
-    Dementia.marqueeContainer().appendChild(bannerContainer);
-    bannerContainer.appendChild(gameBanner);
-
-    let scoreContainer = document.createElement("div");
-    scoreContainer.classList.add("flex", "w-1/5", "justify-end");
-    let scoreDisplay = document.createElement("span");
-    scoreDisplay.id = "scoreDisplay";
-    scoreDisplay.textContent = Dementia.game.players[0].score;
-    scoreDisplay.classList.add("text-4xl", "text-red-500", "mr-4");
-    Dementia.marqueeContainer().appendChild(scoreContainer);
-    scoreContainer.appendChild(scoreDisplay);
+    
   }
 }
 
