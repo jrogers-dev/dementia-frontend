@@ -1,13 +1,38 @@
 //-----------------------------------MODELS-------------------------------------------
 class Dementia {
-  static marqueeContainer() {
-    this.mc ||= document.querySelector("#marquee");
-    return this.mc;
-  }
+  static w = [];
 
-  static fieldContainer() {
-    this.fc ||= document.querySelector('#field');
-    return this.fc;
+  static buildPage() {
+    //cache reference to main div
+    this.w.main = document.getElementById("main");
+
+    //Marquee container is at the top of the page and holds three inner divs
+    this.w.marquee = document.createElement("div");
+    this.w.marquee.id = "marquee";
+    this.w.marquee.classList.add("flex", "flex-row", "absolute", "top-0", "w-screen", "h-14", "bg-gray-300", "outline-gray", "shadow-xl", "z-10");
+    this.w.main.appendChild(this.w.marquee);
+
+    this.w.marqLeft = document.createElement("div");
+    this.w.marqLeft.id = "marqLeft";
+    this.w.marqLeft.classList.add("flex", "w-1/5");
+    this.w.marquee.appendChild(this.w.marqLeft);
+
+    this.w.marqCenter = document.createElement("div");
+    this.w.marqCenter.id = "marqCenter";
+    this.w.marqCenter.classList.add("flex", "w-3/5");
+    this.w.marquee.appendChild(this.w.marqCenter);
+
+    this.w.marqRight = document.createElement("div");
+    this.w.marqRight.id = "marqRight";
+    this.w.marqRight.classList.add("flex", "w-1/5");
+    this.w.marquee.appendChild(this.w.marqRight);
+
+
+    //Field is where the game is played, buttons are pushed, etc.
+    this.w.field = document.createElement("div");
+    this.w.field.id = "field";
+    this.w.field.classList.add("flex", "flex-col", "h-full", "bg-gray-400", "items-center");
+    this.w.main.appendChild(this.w.field);
   }
 
   static newGame() {
@@ -578,7 +603,7 @@ class FetchAdapter {
 
 //-----------------------------------LISTENERS------------------------------------------- 
 document.addEventListener('DOMContentLoaded', function(e) {
-  Dementia.displayLanding();
+  Dementia.buildPage();
 });
 
 document.addEventListener('click', function(e) {
