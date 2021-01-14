@@ -20,7 +20,7 @@ class Dementia {
 
     this.w.mlSpan = document.createElement("span");
     this.w.mlSpan.id = "mlSpan";
-    this.w.mlSpan.classList.add("text-4xl", "text-gray-300");
+    this.w.mlSpan.classList.add("text-4xl", "text-gray-300", "ml-4");
     this.w.marqLeft.appendChild(this.w.mlSpan);
 
     this.w.marqCenter = document.createElement("div");
@@ -30,12 +30,12 @@ class Dementia {
 
     this.w.mcSpan = document.createElement("span");
     this.w.mcSpan.id = "mcSpan";
-    this.w.mcSpan.classList.add("text-4xl", "text-gray-300");
+    this.w.mcSpan.classList.add("text-5xl", "text-gray-300");
     this.w.marqCenter.appendChild(this.w.mcSpan);
 
     this.w.marqRight = document.createElement("div");
     this.w.marqRight.id = "marqRight";
-    this.w.marqRight.classList.add("flex", "w-1/5", "justify-end");
+    this.w.marqRight.classList.add("flex", "w-1/5", "justify-end", "mr-4");
     this.w.marquee.appendChild(this.w.marqRight);
 
     this.w.mrSpan = document.createElement("span");
@@ -69,7 +69,7 @@ class Dementia {
       for (let j = 0 + ((i-1) * 5) ; j < 5 + ((i-1) * 5); j++) {
         this.w.pos[j] = document.createElement("div");
         this.w.pos[j].id = `pos-${j}`;
-        this.w.pos[j].classList.add("flex", "items-center", "justify-center", "h-28", "w-20", "m-4", "bg-gray-400", "border-gray-500", "border-4", "rounded-lg", "z-10", "shadow-xl");
+        this.w.pos[j].classList.add("flex", "items-center", "justify-center", "h-28", "w-20", "m-4", "bg-gray-400", "border-gray-600", "border-4", "rounded-lg", "z-10", "shadow-xl");
         this.w.row[i].appendChild(this.w.pos[j]);
 
         this.w.pSpan[j] = document.createElement("div");
@@ -88,7 +88,7 @@ class Dementia {
 
     this.w.popMessage = document.createElement("span");
     this.w.popMessage.id = "popMessage";
-    this.w.popMessage.classList.add("text-6xl", "text-gray-800", "m-2", "p-2", "text-center");
+    this.w.popMessage.classList.add("text-5xl", "text-gray-800", "m-2", "p-2", "text-center");
     this.w.popup.appendChild(this.w.popMessage);
 
     this.w.popInput = document.createElement("input");
@@ -196,7 +196,7 @@ class Dementia {
   }
 
   static displayGame() {
-    this.w.mcSpan.textContent = "Remember Not to Forget!";
+    this.w.mcSpan.textContent = "Don't Forget!";
     this.w.mlSpan.textContent = Dementia.game.time;
     this.w.mrSpan.textContent = Dementia.game.players[0].score;
     this.w.popup.classList.add("hidden", "pointer-events-none");
